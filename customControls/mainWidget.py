@@ -40,7 +40,6 @@ class MainWidget(QWidget):
                     color:#a9a9a9;
                 }
 
-
                 Button{
                     border-radius:0px;
                     border:none;
