@@ -8,6 +8,9 @@ class Button(QPushButton):
         super(Button, self).__init__(*args, **kwargs)
         self.resize(60, 60)
 
+    def __hash__(self):
+        return hash(self.text())
+
 
 class Push(QPushButton):
     def __init__(self, *args, **kwargs):
@@ -74,6 +77,7 @@ class Push(QPushButton):
     def press(self, but, point=QPoint(-150, -150)):
         self.but.setText(but.text())
         self.move(point)
+        self.check()
 
     def paintEvent(self, arg__1: QPaintEvent):
         # super(Push, self).paintEvent(arg__1)
@@ -165,6 +169,7 @@ class RotatePush(QPushButton):
     def press(self, but, point=QPoint(-150, -150)):
         self.but.setText(but.text())
         self.move(point)
+        self.check()
 
     def paintEvent(self, arg__1: QPaintEvent):
         # super(Push, self).paintEvent(arg__1)

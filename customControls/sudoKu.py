@@ -29,38 +29,38 @@ class SudoKu:
             r = i // 3 * 3 + j // 3
             optionals = list(rows[j] & cols[i] & blocks[r])
             shuffle(optionals)
-            for opt in optionals:
-                chessboard[i][j] = opt
-                rows[j].remove(opt)
-                cols[i].remove(opt)
-                blocks[r].remove(opt)
+            for val in optionals:
+                chessboard[i][j] = val
+                rows[j].remove(val)
+                cols[i].remove(val)
+                blocks[r].remove(val)
                 if self.dfs(rows, cols, blocks, chessboard, i, j + 1):
                     return True
                 chessboard[i][j] = 0
-                rows[j].add(opt)
-                cols[i].add(opt)
-                blocks[r].add(opt)
+                rows[j].add(val)
+                cols[i].add(val)
+                blocks[r].add(val)
         else:
             return self.dfs(rows, cols, blocks, chessboard, i, j + 1)
         return False
 
     # 挖洞 i,j 位置，判断是否有唯一解
     def check_unique(self, rows, cols, blocks, chessboard, i, j):
-        cur = chessboard[i][j]
+        val = chessboard[i][j]
         r = i // 3 * 3 + j // 3
         chessboard[i][j] = 0
-        rows[j].add(cur)
-        cols[i].add(cur)
-        blocks[r].add(cur)
+        rows[j].add(val)
+        cols[i].add(val)
+        blocks[r].add(val)
         self.unique_solution(deepcopy(rows), deepcopy(cols), deepcopy(blocks), deepcopy(chessboard), 0, 0)
         if self.solutions == 1:
             self.empty.add((i, j))
             return False
         else:
-            chessboard[i][j] = cur
-            rows[j].remove(cur)
-            cols[i].remove(cur)
-            blocks[r].remove(cur)
+            chessboard[i][j] = val
+            rows[j].remove(val)
+            cols[i].remove(val)
+            blocks[r].remove(val)
             return True
 
     # 判断是否有唯一解
@@ -75,17 +75,17 @@ class SudoKu:
         if chessboard[i][j] == 0:
             r = i // 3 * 3 + j // 3
             optionals = list(rows[j] & cols[i] & blocks[r])
-            for opt in optionals:
-                chessboard[i][j] = opt
-                rows[j].remove(opt)
-                cols[i].remove(opt)
-                blocks[r].remove(opt)
+            for val in optionals:
+                chessboard[i][j] = val
+                rows[j].remove(val)
+                cols[i].remove(val)
+                blocks[r].remove(val)
                 if self.unique_solution(rows, cols, blocks, chessboard, i, j + 1):
                     return True
                 chessboard[i][j] = 0
-                rows[j].add(opt)
-                cols[i].add(opt)
-                blocks[r].add(opt)
+                rows[j].add(val)
+                cols[i].add(val)
+                blocks[r].add(val)
         else:
             return self.unique_solution(rows, cols, blocks, chessboard, i, j + 1)
 

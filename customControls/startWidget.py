@@ -1,4 +1,5 @@
-from PySide2.QtWidgets import QWidget, QPushButton
+import sys
+from PySide2.QtWidgets import QWidget, QPushButton, QApplication
 
 
 class StartWidget(QWidget):
@@ -40,18 +41,26 @@ class StartWidget(QWidget):
                 }
         ''')
 
-        self.e = QPushButton('简单(E)', self)
-        self.e.resize(350, 60)
-        self.e.move(175, 120)
-        self.m = QPushButton('中等(M)', self)
-        self.m.resize(350, 60)
-        self.m.move(175, 180)
-        self.h = QPushButton('困难(H)', self)
-        self.h.resize(350, 60)
-        self.h.move(175, 240)
-        self.v = QPushButton('魔鬼(V)', self)
-        self.v.resize(350, 60)
-        self.v.move(175, 300)
-        self.d = QPushButton('设计(D)', self)
-        self.d.resize(350, 60)
-        self.d.move(175, 400)
+        self.easy = QPushButton('简单(E)', self)
+        self.easy.resize(380, 60)
+        self.easy.move(250, 120)
+        self.normal = QPushButton('中等(N)', self)
+        self.normal.resize(380, 60)
+        self.normal.move(250, 200)
+        self.hard = QPushButton('困难(H)', self)
+        self.hard.resize(380, 60)
+        self.hard.move(250, 280)
+        self.very_hard = QPushButton('魔鬼(V)', self)
+        self.very_hard.resize(380, 60)
+        self.very_hard.move(250, 360)
+
+
+def main():
+    app = QApplication(sys.argv)
+    label = StartWidget()
+    label.show()
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    main()

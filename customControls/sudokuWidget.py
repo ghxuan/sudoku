@@ -18,7 +18,8 @@ class SudokuWidget(QMainWindow):
 
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.resize(880, 600)
-        icon = QIcon('t.ico')
+        self.setFixedSize(self.width(), self.height())
+        icon = QIcon('resource/ico/title.ico')
         self.setWindowIcon(icon)
         self.setWindowTitle('数独')
 
@@ -26,8 +27,8 @@ class SudokuWidget(QMainWindow):
         self.start = MainWidget()
 
         self.setCentralWidget(self.start)
-        self.start.n.clicked.connect(lambda: self.play(self.home))
-        self.home.e.clicked.connect(lambda: self.play(self.start))
+        self.start.new.clicked.connect(lambda: self.play(self.home))
+        self.home.easy.clicked.connect(lambda: self.play(self.start))
         pass
 
     def exchange(self):

@@ -1,7 +1,9 @@
-from PySide2.QtCore import Qt, QPoint
 from PySide2.QtWidgets import QWidget
+from PySide2.QtCore import Qt, QPoint
 from PySide2.QtGui import QPaintEvent, QPainter, QMouseEvent, QPen
+
 from customControls.pushButton import QPushButton, RotatePush, Push, Button
+from customControls.sudoKu import SudoKu, deepcopy
 
 
 class MainWidget(QWidget):
@@ -117,69 +119,120 @@ class MainWidget(QWidget):
                     color:#000000;
                 }
         ''')
-
-        self.p = QPushButton('暂停(P)', self)
-        self.p.resize(130, 60)
-        self.p.move(680, 350)
-        self.c = QPushButton('清除盘面(C)', self)
-        self.c.resize(130, 60)
-        self.c.move(680, 420)
-        self.c.setEnabled(False)
-        self.n = QPushButton('新谜题(N)', self)
-        self.n.resize(130, 60)
-        self.n.move(680, 490)
-        self.board = [[9, 0, 0, 1, 0, 0, 0, 0, 0],
-                      [0, 5, 6, 7, 0, 0, 0, 9, 0],
-                      [0, 0, 7, 4, 0, 0, 6, 0, 2],
-                      [0, 0, 0, 0, 0, 7, 0, 0, 9],
-                      [7, 3, 1, 0, 0, 0, 0, 0, 0],
-                      [2, 0, 9, 0, 0, 0, 0, 7, 8],
-                      [0, 0, 0, 0, 0, 5, 0, 0, 3],
-                      [0, 0, 4, 3, 8, 0, 0, 0, 1],
-                      [6, 7, 3, 2, 0, 1, 0, 0, 5]]
+        self.sudoKu = SudoKu()
+        self.stop = QPushButton('暂停(S)', self)
+        self.stop.resize(130, 60)
+        self.stop.move(680, 350)
+        self.clear = QPushButton('清除盘面(C)', self)
+        self.clear.resize(130, 60)
+        self.clear.move(680, 420)
+        self.clear.setEnabled(False)
+        self.new = QPushButton('新谜题(N)', self)
+        self.new.resize(130, 60)
+        self.new.move(680, 490)
+        self.end_board, self.board, self.rows, self.cols, self.blocks = [[]], [[]], [set()], [set()], [set()]
+        self._buttons, self.buttons, self.res = [dict() for _ in range(9)], [], []
 
         for i in range(3):
             # 从左到右，从上到下
-            self.button(71, 31 + i * 179, 1 + i * 3)
-            self.button(71 + 179, 31 + i * 179, 2 + i * 3)
-            self.button(71 + 358, 31 + i * 179, 3 + i * 3)
+            self.init_board(71, 31 + i * 179, i * 3)
+            self.init_board(71 + 179, 31 + i * 179, 1 + i * 3)
+            self.init_board(71 + 358, 31 + i * 179, 2 + i * 3)
 
+        self.write_all_button()
         self.out = QPoint(-150, -150)
 
         self.push = Push(self)
         self.push.resize(142, 151)
         self.push.move(self.out)
+        self.push.check = self.check
         self.rotate_push = RotatePush(self)
         self.rotate_push.resize(142, 151)
         self.rotate_push.move(self.out)
+        self.rotate_push.check = self.check
 
-    def button(self, x, y, t=1, f=False):
+    def init_board(self, x, y, t=0):
         for i in range(3):
             for j in range(3):
                 # 从左到右，从上到下
                 # t 为大正方形，第几个；j 为从左到右第几个；i 为从上到下第几个
-                m, n = divmod(t - 1, 3)
-                val = self.board[m * 3 + j][n * 3 + i] if self.board[m * 3 + j][n * 3 + i] else ""
+                m, n = divmod(t, 3)
+                # pos_i, pos_j = m * 3 + j, n * 3 + i
                 exec(
-                    f'self.but{t}{j}{i} = Button("{val}", self)\n'
-                    f'self.but{t}{j}{i}.resize(59, 59)\n'
+                    f'self.but{t}{j}{i} = Button("", self)\n'
+                    # f'self.but{t}{j}{i}.position = [pos_i, pos_j, t]\n'
                     f'self.but{t}{j}{i}.resize(59, 59)\n'
                     f'self.but{t}{j}{i}.move({x + 59 * i}, {y + 59 * j})\n'
                     f'self.but{t}{j}{i}.clicked.connect(lambda: self.press(self.but{t}{j}{i}))',
                     locals(), globals())
-                if eval(f'self.but{t}{j}{i}.text()'):
-                    # exec(f'self.but{t}{j}{i}.setEnabled(False)')
-                    exec(f'self.but{t}{j}{i}.dis = False')
-                    exec(f'self.but{t}{j}{i}.setProperty("dis", "False")')
-                else:
-                    exec(f'self.but{t}{j}{i}.dis = True')
-                    exec(f'self.but{t}{j}{i}.setProperty("dis", "True")')
+                # self.blocks_buttons[t].append(eval(f'self.but{t}{j}{i}'))
+                # self.cols_buttons[pos_j].append(eval(f'self.but{t}{j}{i}'))
+                # self.rows_buttons[pos_i].append(eval(f'self.but{t}{j}{i}'))
+                self.buttons.append([eval(f'self.but{t}{j}{i}'), m * 3 + j, n * 3 + i, t])
                 if i == 0 and j == 0:
                     exec(f'self.but{t}{j}{i}.setStyleSheet("border-left:none;border-top:none;")')
                 elif j == 0:
                     exec(f'self.but{t}{j}{i}.setStyleSheet("border-top:none;")')
                 elif i == 0:
                     exec(f'self.but{t}{j}{i}.setStyleSheet("border-left:none;")')
+        pass
+
+    def write_all_button(self):
+        self.res = self.sudoKu.board(50)
+        self.re_write_all_button()
+
+    def re_write_all_button(self):
+        self.end_board, self.board, self.rows, self.cols, self.blocks = deepcopy(self.res)
+        from pprint import pprint
+        for i in range(3):
+            # 从左到右，从上到下
+            self.write_one_button(i * 3)
+            self.write_one_button(1 + i * 3)
+            self.write_one_button(2 + i * 3)
+        self.check()
+        pass
+
+    def write_one_button(self, t=0):
+        for i in range(3):
+            for j in range(3):
+                # 从左到右，从上到下
+                # t 为大正方形，第几个；j 为从左到右第几个；i 为从上到下第几个
+                m, n = divmod(t, 3)
+                val = self.board[m * 3 + j][n * 3 + i] if self.board[m * 3 + j][n * 3 + i] else ""
+                exec(f'self.but{t}{j}{i}.setText("{val}")')
+                if val:
+                    # exec(f'self.but{t}{j}{i}.setEnabled(False)')
+                    exec(f'self.but{t}{j}{i}.dis = False')
+                    exec(f'self.but{t}{j}{i}.setProperty("dis", "False")')
+                else:
+                    exec(f'self.but{t}{j}{i}.dis = True')
+                    exec(f'self.but{t}{j}{i}.setProperty("dis", "True")')
+
+    def check(self):
+        cols, rows, blocks, reds = deepcopy(self._buttons), deepcopy(self._buttons), deepcopy(self._buttons), set()
+
+        for but, i, j, t in self.buttons:
+            val = but.text()
+            if val in cols[i]:
+                reds.add(but)
+                reds.add(cols[i][val])
+            else:
+                cols[i][val] = but
+            if val in rows[j]:
+                reds.add(but)
+                reds.add(rows[j][val])
+            else:
+                rows[j][val] = but
+            if val in blocks[t]:
+                reds.add(but)
+                reds.add(blocks[t][val])
+            else:
+                blocks[t][val] = but
+        for but, _, _, _ in self.buttons:
+            if but in reds:
+                but.setStyleSheet('color:red;')
+            else:
+                but.setStyleSheet('color:black;')
 
     def press(self, but, out=QPoint(-42, 39), rotate_out=QPoint(-42, -130)):
         self.push.move(self.out)
