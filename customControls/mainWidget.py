@@ -1,7 +1,7 @@
 from PySide2.QtCore import Qt, QPoint
 from PySide2.QtWidgets import QWidget
 from PySide2.QtGui import QPaintEvent, QPainter, QMouseEvent, QPen
-from customControls.pushButton import QPushButton, RotatePush, Push
+from customControls.pushButton import QPushButton, RotatePush, Push, Button
 
 
 class MainWidget(QWidget):
@@ -51,7 +51,6 @@ class MainWidget(QWidget):
                     font-weight: 500;
                     font-size:18px;
                     font-family:Microsoft YaHei;
-                    z-index:1;
                 }
 
                 Button:hover{
@@ -209,5 +208,5 @@ class MainWidget(QWidget):
     def mousePressEvent(self, event: QMouseEvent):
         self.push.move(self.out)
         self.rotate_push.move(self.out)
-        super(PWidget, self).mousePressEvent(event)
+        super(MainWidget, self).mousePressEvent(event)
         pass
