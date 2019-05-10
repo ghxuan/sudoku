@@ -11,6 +11,7 @@ class SudoKu:
         # 列，行，块
         rows, cols, blocks = deepcopy(self.blocks), deepcopy(self.blocks), deepcopy(self.blocks)
         chessboard = [[0 for _ in range(9)] for _ in range(9)]
+        self.empty.clear()
         self.dfs(rows, cols, blocks, chessboard, 0, 0)
         end_board = deepcopy(chessboard)
         while len(self.empty) < n:
@@ -92,5 +93,5 @@ class SudoKu:
 
 if __name__ == '__main__':
     s = SudoKu()
-    for sudo in s.board(50):
-        print(sudo)
+    for _ in range(100):
+        s.board(50)

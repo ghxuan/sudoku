@@ -1,6 +1,7 @@
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow
+
 from customControls.mainWidget import MainWidget
 from customControls.startWidget import StartWidget
 
@@ -23,17 +24,19 @@ class SudokuWidget(QMainWindow):
         self.setWindowIcon(icon)
         self.setWindowTitle('数独')
 
-        self.home = StartWidget()
-        self.start = MainWidget()
+        self.start = StartWidget()
+        self.home = MainWidget()
 
         self.setCentralWidget(self.start)
-        self.start.new.clicked.connect(lambda: self.play(self.home))
-        self.home.easy.clicked.connect(lambda: self.play(self.start))
+        self.home.new.clicked.connect(lambda: self.play(self.start))
+        self.start.easy.clicked.connect(lambda: self.play(self.home, n=50))
+        self.start.normal.clicked.connect(lambda: self.play(self.home, n=50))
+        self.start.hard.clicked.connect(lambda: self.play(self.home, n=50))
+        self.start.very_hard.clicked.connect(lambda: self.play(self.home, n=50))
         pass
 
-    def exchange(self):
-        pass
-
-    def play(self, widget):
+    def play(self, widget, n=0):
+        self.centralWidget().setParent(None)
         self.setCentralWidget(widget)
-        pass
+        if widget == self.home:
+            widget.write_all_button(n)
