@@ -5,3 +5,5 @@ sudoku/
 build/
 dist/
 *.spec
+setup.py
+upx/
