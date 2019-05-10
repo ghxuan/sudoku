@@ -1,3 +1,4 @@
+import os
 from random import choice
 
 from PySide2.QtCore import Qt
@@ -22,7 +23,10 @@ class SudokuWidget(QMainWindow):
         self.setWindowFlags(Qt.WindowCloseButtonHint)
         self.resize(880, 600)
         self.setFixedSize(self.width(), self.height())
-        icon = QIcon('resource/ico/title.ico')
+        if os.path.exists('resource'):
+            icon = QIcon('resource/ico/title.ico')
+        else:
+            icon = QIcon('title.ico')
         self.setWindowIcon(icon)
         self.setWindowTitle('数独')
 
