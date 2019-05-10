@@ -1,5 +1,5 @@
 from PySide2.QtCore import Qt, QRect, QPoint
-from PySide2.QtWidgets import QWidget, QPushButton
+from PySide2.QtWidgets import QPushButton
 from PySide2.QtGui import QPaintEvent, QPainter, QBrush, QColor, QPen
 
 
