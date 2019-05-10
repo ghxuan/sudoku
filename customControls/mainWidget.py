@@ -3,6 +3,8 @@ from PySide2.QtCore import Qt, QPoint
 from PySide2.QtGui import QPaintEvent, QPainter, QMouseEvent, QPen
 
 from customControls.pushButton import QPushButton, RotatePush, Push, Button
+from customControls.maskWidget import MaskWidget
+from customControls.dialog import StopDialog, WinDialog
 from customControls.sudoKu import SudoKu, deepcopy
 
 
@@ -123,10 +125,11 @@ class MainWidget(QWidget):
         self.stop = QPushButton('暂停(S)', self)
         self.stop.resize(130, 60)
         self.stop.move(680, 350)
+        self.stop.clicked.connect(lambda: self.stop_it())
         self.clear = QPushButton('清除盘面(C)', self)
         self.clear.resize(130, 60)
         self.clear.move(680, 420)
-        self.clear.setEnabled(False)
+        self.clear.clicked.connect(lambda: self.re_write_all_button())
         self.new = QPushButton('新谜题(N)', self)
         self.new.resize(130, 60)
         self.new.move(680, 490)
@@ -160,14 +163,10 @@ class MainWidget(QWidget):
                 # pos_i, pos_j = m * 3 + j, n * 3 + i
                 exec(
                     f'self.but{t}{j}{i} = Button("", self)\n'
-                    # f'self.but{t}{j}{i}.position = [pos_i, pos_j, t]\n'
                     f'self.but{t}{j}{i}.resize(59, 59)\n'
                     f'self.but{t}{j}{i}.move({x + 59 * i}, {y + 59 * j})\n'
                     f'self.but{t}{j}{i}.clicked.connect(lambda: self.press(self.but{t}{j}{i}))',
                     locals(), globals())
-                # self.blocks_buttons[t].append(eval(f'self.but{t}{j}{i}'))
-                # self.cols_buttons[pos_j].append(eval(f'self.but{t}{j}{i}'))
-                # self.rows_buttons[pos_i].append(eval(f'self.but{t}{j}{i}'))
                 self.buttons.append([eval(f'self.but{t}{j}{i}'), m * 3 + j, n * 3 + i, t])
                 if i == 0 and j == 0:
                     exec(f'self.but{t}{j}{i}.setStyleSheet("border-left:none;border-top:none;")')
@@ -184,12 +183,12 @@ class MainWidget(QWidget):
     def re_write_all_button(self):
         self.end_board, self.board, self.rows, self.cols, self.blocks = deepcopy(self.res)
         from pprint import pprint
+        pprint(self.end_board)
         for i in range(3):
             # 从左到右，从上到下
             self.write_one_button(i * 3)
             self.write_one_button(1 + i * 3)
             self.write_one_button(2 + i * 3)
-        self.check()
         pass
 
     def write_one_button(self, t=0):
@@ -210,9 +209,13 @@ class MainWidget(QWidget):
 
     def check(self):
         cols, rows, blocks, reds = deepcopy(self._buttons), deepcopy(self._buttons), deepcopy(self._buttons), set()
-
+        win = []
         for but, i, j, t in self.buttons:
             val = but.text()
+            if val == f'{self.end_board[i][j]}':
+                win.append(True)
+            else:
+                win.append(False)
             if val in cols[i]:
                 reds.add(but)
                 reds.add(cols[i][val])
@@ -228,11 +231,27 @@ class MainWidget(QWidget):
                 reds.add(blocks[t][val])
             else:
                 blocks[t][val] = but
+        if all(win):
+            self.win()
         for but, _, _, _ in self.buttons:
             if but in reds:
                 but.setStyleSheet('color:red;')
             else:
                 but.setStyleSheet('color:black;')
+
+    def stop_it(self):
+        dialog = StopDialog(self)
+        mask = MaskWidget(self)
+        mask.show()
+        dialog.exec()
+        mask.close()
+
+    def win(self):
+        dialog = WinDialog(self)
+        mask = MaskWidget(self)
+        mask.show()
+        dialog.exec()
+        mask.close()
 
     def press(self, but, out=QPoint(-42, 39), rotate_out=QPoint(-42, -130)):
         self.push.move(self.out)
