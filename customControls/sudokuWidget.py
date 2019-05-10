@@ -1,3 +1,5 @@
+from random import choice
+
 from PySide2.QtCore import Qt
 from PySide2.QtGui import QIcon
 from PySide2.QtWidgets import QMainWindow
@@ -29,10 +31,10 @@ class SudokuWidget(QMainWindow):
 
         self.setCentralWidget(self.start)
         self.home.new.clicked.connect(lambda: self.play(self.start))
-        self.start.easy.clicked.connect(lambda: self.play(self.home, n=50))
-        self.start.normal.clicked.connect(lambda: self.play(self.home, n=50))
-        self.start.hard.clicked.connect(lambda: self.play(self.home, n=50))
-        self.start.very_hard.clicked.connect(lambda: self.play(self.home, n=50))
+        self.start.easy.clicked.connect(lambda: self.play(self.home, n=choice(range(40, 46))))
+        self.start.normal.clicked.connect(lambda: self.play(self.home, n=choice(range(46, 51))))
+        self.start.hard.clicked.connect(lambda: self.play(self.home, n=51))
+        self.start.very_hard.clicked.connect(lambda: self.play(self.home, n=52))
         pass
 
     def play(self, widget, n=0):
