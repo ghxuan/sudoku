@@ -42,6 +42,8 @@ class SudokuWidget(QMainWindow):
         pass
 
     def play(self, widget, n=0):
+        self.home.push.move(self.home.out)
+        self.home.rotate_push.move(self.home.out)
         self.centralWidget().setParent(None)
         self.setCentralWidget(widget)
         if widget == self.home:

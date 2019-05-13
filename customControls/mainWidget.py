@@ -195,6 +195,8 @@ class MainWidget(QWidget):
         self.check()
 
     def re_write_all_button(self):
+        self.push.move(self.out)
+        self.rotate_push.move(self.out)
         self.end_board, self.board, self.rows, self.cols, self.blocks = deepcopy(self.res)
 
         for i in range(3):
@@ -220,7 +222,9 @@ class MainWidget(QWidget):
                 exec(f'self.but{t}{j}{i}.setText("{val}")')
 
     def check(self):
-        cols, rows, blocks, reds = deepcopy(self._buttons), deepcopy(self._buttons), deepcopy(self._buttons), set()
+        self.push.move(self.out)
+        self.rotate_push.move(self.out)
+        cols_rows_blocks, reds = [deepcopy(self._buttons), deepcopy(self._buttons), deepcopy(self._buttons)], set()
         win = []
         for but, i, j, t in self.buttons:
             val = but.text()
@@ -228,21 +232,12 @@ class MainWidget(QWidget):
                 win.append(True)
             else:
                 win.append(False)
-            if val in cols[i]:
-                reds.add(but)
-                reds.add(cols[i][val])
-            else:
-                cols[i][val] = but
-            if val in rows[j]:
-                reds.add(but)
-                reds.add(rows[j][val])
-            else:
-                rows[j][val] = but
-            if val in blocks[t]:
-                reds.add(but)
-                reds.add(blocks[t][val])
-            else:
-                blocks[t][val] = but
+            for buttons in cols_rows_blocks:
+                if val in buttons[i]:
+                    reds.add(but)
+                    reds.add(buttons[i][val])
+                else:
+                    buttons[i][val] = but
         for but, _, _, _ in self.buttons:
             if but in reds:
                 but.setStyleSheet('color:red;')
