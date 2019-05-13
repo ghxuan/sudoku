@@ -28,7 +28,9 @@ class LcdNumber(QLCDNumber):
         self.timer.interval()
 
     def re_init(self):
+        self.timer.start()
         self.time = datetime.strptime('00:00:00', '%H:%M:%S')
+        self.display(self.time.strftime('%H:%M:%S'))
         self.timer.interval()
         pass
 

@@ -1,5 +1,3 @@
-import time
-
 from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Qt, QPoint, QTimer
 from PySide2.QtGui import QPaintEvent, QPainter, QMouseEvent, QPen
@@ -31,7 +29,6 @@ class MainWidget(QWidget):
         self.new = QPushButton('新谜题(N)', self)
         self.new.resize(130, 60)
         self.new.move(680, 490)
-        self.start_time = self.time = self.end_time = time.localtime()
         self.end_board, self.board, self.rows, self.cols, self.blocks = [[]], [[]], [set()], [set()], [set()]
         self._buttons, self.buttons, self.res = [dict() for _ in range(9)], [], []
 
@@ -86,7 +83,7 @@ class MainWidget(QWidget):
         pass
 
     def write_all_button(self, n):
-        self.start_time = time.localtime()
+        self.lcd.re_init()
         self.res = self.sudoKu.board(n)
         # from pprint import pprint
         # pprint(self.res[0])
