@@ -1,7 +1,7 @@
 import time
 
+from PySide2.QtWidgets import QWidget
 from PySide2.QtCore import Qt, QPoint, QTimer
-from PySide2.QtWidgets import QWidget, QLCDNumber
 from PySide2.QtGui import QPaintEvent, QPainter, QMouseEvent, QPen
 
 from customControls.pushButton import QPushButton, RotatePush, Push, Button
@@ -200,6 +200,9 @@ class MainWidget(QWidget):
                     color:#000000;
                 }
         ''')
+        self.stop.setEnabled(True)
+        self.clear.setEnabled(True)
+        self.solve_problem.setEnabled(True)
         self.check()
 
     def re_write_all_button(self):
@@ -251,17 +254,23 @@ class MainWidget(QWidget):
                 but.setStyleSheet('color:red;')
             else:
                 but.setStyleSheet('color:black;')
-        if all(win):
+        if all(win) and self.stop.isEnabled():
             self.win()
 
     def stop_it(self):
+        self.lcd.stop()
         dialog = StopDialog(self)
         mask = MaskWidget(self)
         mask.show()
         dialog.exec()
         mask.close()
+        self.lcd.stop()
 
     def win(self):
+        self.lcd.stop()
+        self.stop.setEnabled(False)
+        self.clear.setEnabled(False)
+        self.solve_problem.setEnabled(False)
         dialog = WinDialog(self)
         mask = MaskWidget(self)
         mask.show()

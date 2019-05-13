@@ -1,6 +1,6 @@
 import sys
-import time
-from PySide2.QtCore import Qt
+from datetime import datetime, timedelta
+from PySide2.QtCore import Qt, QTimer
 from PySide2.QtWidgets import QLCDNumber, QApplication
 
 
@@ -14,17 +14,33 @@ class LcdNumber(QLCDNumber):
         self.setDigitCount(8)
         self.setMode(QLCDNumber.Dec)
         self.setSegmentStyle(QLCDNumber.Flat)
-        self.display(time.strftime("%X", time.localtime()))
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.update_time)
+        self.time = datetime.strptime('00:00:00', '%H:%M:%S')
+        self.one_seconds = timedelta(seconds=1)
+        self.timer.start(1000)
+        self.display(self.time.strftime('%H:%M:%S'))
         self.setStyleSheet("""
                 QLCDNumber{
                     border:none;
                 }
         """)
-        print(time.localtime())
-        print(type(time.localtime()))
+        self.timer.interval()
 
     def re_init(self):
+        self.time = datetime.strptime('00:00:00', '%H:%M:%S')
+        self.timer.interval()
         pass
+
+    def update_time(self):
+        self.time += self.one_seconds
+        self.display(self.time.strftime('%H:%M:%S'))
+
+    def stop(self):
+        if self.timer.isActive():
+            self.timer.stop()
+        else:
+            self.timer.start()
 
 
 def main():
