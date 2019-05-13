@@ -1,11 +1,14 @@
-from PySide2.QtWidgets import QWidget
-from PySide2.QtCore import Qt, QPoint
+import time
+
+from PySide2.QtCore import Qt, QPoint, QTimer
+from PySide2.QtWidgets import QWidget, QLCDNumber
 from PySide2.QtGui import QPaintEvent, QPainter, QMouseEvent, QPen
 
 from customControls.pushButton import QPushButton, RotatePush, Push, Button
-from customControls.maskWidget import MaskWidget
 from customControls.dialog import StopDialog, WinDialog
 from customControls.sudoKu import SudoKu, deepcopy
+from customControls.maskWidget import MaskWidget
+from customControls.lcdNumber import LcdNumber
 
 
 class MainWidget(QWidget):
@@ -28,6 +31,7 @@ class MainWidget(QWidget):
         self.new = QPushButton('新谜题(N)', self)
         self.new.resize(130, 60)
         self.new.move(680, 490)
+        self.start_time = self.time = self.end_time = time.localtime()
         self.end_board, self.board, self.rows, self.cols, self.blocks = [[]], [[]], [set()], [set()], [set()]
         self._buttons, self.buttons, self.res = [dict() for _ in range(9)], [], []
 
@@ -47,6 +51,9 @@ class MainWidget(QWidget):
         self.rotate_push.resize(142, 151)
         self.rotate_push.move(self.out)
         self.rotate_push.check = self.check
+
+        self.timer = QTimer()
+        self.lcd = LcdNumber(self)
 
     def init_board(self, x, y, t=0):
         for i in range(3):
@@ -79,6 +86,7 @@ class MainWidget(QWidget):
         pass
 
     def write_all_button(self, n):
+        self.start_time = time.localtime()
         self.res = self.sudoKu.board(n)
         # from pprint import pprint
         # pprint(self.res[0])
