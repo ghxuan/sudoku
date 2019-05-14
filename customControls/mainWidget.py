@@ -212,6 +212,7 @@ class MainWidget(QWidget):
             self.write_one_button(i * 3)
             self.write_one_button(1 + i * 3)
             self.write_one_button(2 + i * 3)
+        self.check()
         pass
 
     def write_one_button(self, t=0):
